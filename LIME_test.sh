@@ -14,7 +14,7 @@ algo='LIME'
 CUDA_VISIBLE_DEVICES=0 python formal_LIME_single_image.py --img_path ${img_path} --true_class ${true_class} --dataset ${dataset} --weight_file ${weight_file} --save_path ${save_path} --algo ${algo}
 
 echo "### Output for LIME ###"
-montage -quiet ${save_path}/${algo}/${dataset}/original.png ${save_path}/${algo}/${dataset}/mask_${algo}.png -tile x1 -geometry +2+2 ${save_path}/${algo}/${dataset}/out_${algo}.jpg
+montage -quiet ${save_path}/${algo}/${dataset}/original.png $(ls ${save_path}/${algo}/${dataset}/intermediate_steps/* | sort -R | tail -5) ${save_path}/${algo}/${dataset}/mask_${algo}.png -tile x1 -geometry +2+2 ${save_path}/${algo}/${dataset}/out_${algo}.jpg
 imgcat ${save_path}/${algo}/${dataset}/out_${algo}.jpg
 
 # LIME-G
@@ -22,5 +22,5 @@ algo='LIMEG'
 CUDA_VISIBLE_DEVICES=0 python formal_LIME_single_image.py --img_path ${img_path} --true_class ${true_class} --dataset ${dataset} --weight_file ${weight_file} --save_path ${save_path} --algo ${algo}
 
 echo "### Output for LIME-G ###"
-montage -quiet ${save_path}/${algo}/${dataset}/original.png ${save_path}/${algo}/${dataset}/mask_${algo}.png -tile x1 -geometry +2+2 ${save_path}/${algo}/${dataset}/out_${algo}.jpg
+montage -quiet ${save_path}/${algo}/${dataset}/original.png $(ls ${save_path}/${algo}/${dataset}/intermediate_steps/* | sort -R | tail -5) ${save_path}/${algo}/${dataset}/mask_${algo}.png -tile x1 -geometry +2+2 ${save_path}/${algo}/${dataset}/out_${algo}.jpg
 imgcat ${save_path}/${algo}/${dataset}/out_${algo}.jpg

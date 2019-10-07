@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import warnings
 warnings.simplefilter('ignore')
 
+import time, os, sys, cv2, time, argparse
 import torch
 import random
 import numpy as np
@@ -10,7 +11,6 @@ from PIL import Image
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models, transforms
-import time, os, sys, time, argparse
 
 from lime import lime_image
 from lime.wrappers.scikit_image import SegmentationAlgorithm
@@ -53,7 +53,7 @@ def get_arguments():
                         )
 
     parser.add_argument('--batch_size', type=int,
-                        default='32', help='bacth size')
+                        default=10, help='batch size')
 
     parser.add_argument('--true_class', type=int,
                         default=852,
@@ -221,10 +221,13 @@ if __name__ == '__main__':
         labels = (true_class, )
 
     # LIME analysis
-    # PyTorch
-    save_path = os.path.join(args.save_path, '{}'.format(args.algo), '{}'.format(args.dataset))
 
+    # save_dir
+    save_path = os.path.join(args.save_path, '{}'.format(args.algo), '{}'.format(args.dataset))
     mkdir_p(save_path)
+    # save path for intermediate steps
+    save_intermediate = os.path.join(save_path, 'intermediate_steps')
+    mkdir_p(save_intermediate)
 
     lime_img = np.array(pill_transf(img))
     t1 = time.time()
@@ -238,7 +241,8 @@ if __name__ == '__main__':
                                                                   random_seed=args.lime_superpixel_seed,
                                                                   fill_type=args.algo,
                                                                   num_super_pixel=args.lime_superpixel_num,
-                                                                  sav_path=save_path, target_category=true_class)
+                                                                  sav_path=save_intermediate,
+                                                                  target_category=true_class)
     pytorch_segments = pytorch_lime_explanation.segments
     pytorch_heatmap = np.zeros(pytorch_segments.shape)
     local_exp = pytorch_lime_explanation.local_exp

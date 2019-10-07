@@ -1,21 +1,14 @@
 import os
-import time
-import ipdb
-import argparse
-import torch
-import torch.optim
-from torch.autograd import Variable
-from torchvision import models
 import cv2
 import sys
-import scipy
+import time
+import torch
+import argparse
+import torch.optim
+import numpy as np
 from formal_utils import *
 from skimage.util import view_as_windows
-from numpy import matlib as mat
-import numpy as np
-import matplotlib.pyplot as plt
 from skimage.transform import resize
-import torchvision.transforms as transforms
 from torch.utils.data import Dataset
 
 
@@ -36,7 +29,7 @@ class occlusion_analysis:
         self.org_shape = org_shape
         self.batch_size = batch_size
 
-    def explain(self, neuron, loader, heatmap_type='occlusion'):
+    def explain(self, neuron, loader, heatmap_type='SP', path='./'):
 
         # Compute original output
         org_softmax = torch.nn.Softmax(dim=1)(self.model(self.image))
@@ -45,11 +38,23 @@ class occlusion_analysis:
 
         batch_heatmap = torch.Tensor().to('cuda')
 
+        # Create save_path for storing intermediate steps
+        path = os.path.join(path, 'intermediate_steps')
+        mkdir_p(path)
+
         for i, data in enumerate(loader):
             data = data.to('cuda')
             if heatmap_type == 'SP':
                 softmax_out = torch.nn.Softmax(dim=1)(self.model(data * self.image))
                 delta = eval0 - softmax_out.data[:, neuron]
+
+                # For saving intermediate steps
+                for j in range(data.shape[0])[:1]:
+                    temp_img = np.uint8(255 * unnormalize(
+                        np.moveaxis((data[j, :] * self.image[0, :]).cpu().detach().numpy().transpose(), 0, 1)))
+                    cv2.imwrite(
+                        os.path.join(path, 'intermediate_{:05d}.png'.format(i * self.batch_size + j)),
+                        cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
 
             elif heatmap_type == 'SPG':
                 inpaint_img, _ = impant_model.generate_background(self.image, data, batch_process=True)
@@ -57,6 +62,14 @@ class occlusion_analysis:
                 inpaint_img = self.image * data + inpaint_img * (1 - data)
                 softmax_out = torch.nn.Softmax(dim=1)(self.model(inpaint_img))
                 delta = eval0 - softmax_out.data[:, neuron]
+
+                # For saving intermediate steps
+                for j in range(inpaint_img.shape[0])[:1]:
+                    temp_img = np.uint8(255 * unnormalize(
+                        np.moveaxis(inpaint_img[j, :].cpu().detach().numpy().transpose(), 0, 1)))
+                    cv2.imwrite(
+                        os.path.join(path, 'intermediate_{:05d}.png'.format(i * self.batch_size + j)),
+                        cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
 
             batch_heatmap = torch.cat((batch_heatmap, delta))
 
@@ -170,9 +183,7 @@ if __name__ == '__main__':
 
     # Path to the output folder
     save_path = os.path.join(args.save_path, '{}'.format(args.algo), '{}'.format(args.dataset))
-
-    if not os.path.isdir(os.path.join(save_path)):
-        mkdir_p(os.path.join(save_path))
+    mkdir_p(save_path)
 
     # save original image
     pill_transf = get_pil_transform()
@@ -187,7 +198,7 @@ if __name__ == '__main__':
         for stride in [args.stride]:
             for p_size in [args.patch_size]:
                 heatmap = heatmap_occ.explain(neuron=gt_category, loader=trainloader,
-                                              heatmap_type=args.algo)
+                                              heatmap_type=args.algo, path=save_path)
                 np.save(
                     os.path.join(save_path, 'mask_{}.npy'.format(args.algo)),
                     heatmap)

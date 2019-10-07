@@ -30,8 +30,8 @@ def numpy_to_torch(img, requires_grad=True):
         output = output.to('cuda')  # cuda()
 
     output.unsqueeze_(0)
-    v = Variable(output, requires_grad=requires_grad)
-    return v
+    output.requires_grad = requires_grad
+    return output
 
 
 def create_blurred_circular_mask(mask_shape, radius, center=None, sigma=10):
@@ -318,6 +318,17 @@ if __name__ == '__main__':
 
         optimizer.step()
         mask.data.clamp_(0, 1)
+
+        # Create save_path for storing intermediate steps
+        path = os.path.join(save_path, 'intermediate_steps')
+        mkdir_p(path)
+
+        # Save intermediate steps
+        temp_intermediate = np.uint8(
+                                255 * unnormalize(
+                                    np.moveaxis(perturbated_input[0, :].cpu().detach().numpy().transpose(), 0, 1)))
+        cv2.imwrite(os.path.join(path, "intermediate_{:03d}.jpg"
+                                 .format(i)), cv2.cvtColor(temp_intermediate, cv2.COLOR_BGR2RGB))
 
     np.save(os.path.join(save_path, "mask_{}.npy".format(args.algo)),
             1 - mask.cpu().detach().numpy()[0, 0, :])

@@ -1,11 +1,5 @@
 import os
-import re
-import cv2
-import sys
-import scipy
 import torch
-import pickle
-import argparse
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -13,18 +7,11 @@ import torch.optim
 from matplotlib import cm
 from torchvision import models
 import matplotlib.pyplot as plt
-from PIL import ImageFilter, Image
-import xml.etree.ElementTree as ET
-from torch.autograd import Variable
-import matplotlib.gridspec as gridspec
+from PIL import Image
 import torchvision.transforms as transforms
 from matplotlib.colors import ListedColormap
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 use_cuda = torch.cuda.is_available()
-FloatTensor = torch.cuda.FloatTensor if use_cuda else torch.FloatTensor
-LongTensor = torch.cuda.LongTensor if use_cuda else torch.LongTensor
-Tensor = FloatTensor
 
 
 def tv_norm(input, tv_beta):
