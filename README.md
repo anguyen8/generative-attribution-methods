@@ -40,8 +40,8 @@ Generating the attribution map for the class "freight car" using MP and MP-G alg
 * Running `source MP_test.sh` produces this result:
 
 <p align="center">
-    <img src="output/MP/imagenet/out_MP.jpg" width=750px>
-    <img src="output/MPG/imagenet/out_MPG.jpg" width=750px>    
+    <img src="output/MP_0/imagenet/out_MP.jpg" width=750px>
+    <img src="output/MPG_1/imagenet/out_MPG.jpg" width=750px>    
 </p>
 <p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultatnt attribution map</i></p>
 
