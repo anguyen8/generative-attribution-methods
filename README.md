@@ -16,12 +16,32 @@ The main codes for SP, LIME, and MP are in [formal_SP_single_image.py](formal_SP
 ### Examples
 
 [SP_test.sh](SP_test.sh): 
-Generating the attribution map for the class "freight car". This script produces a sampling chain for a single given class.
+Generating the attribution map for the class "freight car" using SP and SP-G algorithm.
 * Running `source SP_test.sh` produces this result:
 
 <p align="center">
     <img src="output/SP/imagenet/out_SP.jpg" width=750px>
     <img src="output/SPG/imagenet/out_SPG.jpg" width=750px>    
+</p>
+<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultatnt attribution map</i></p>
+
+[LIME_test.sh](LIME_test.sh): 
+Generating the attribution map for the class "freight car" using LIME and LIME-G algorithm.
+* Running `source LIME_test.sh` produces this result:
+
+<p align="center">
+    <img src="output/LIME/imagenet/out_LIME.jpg" width=750px>
+    <img src="output/LIMEG/imagenet/out_LIMEG.jpg" width=750px>    
+</p>
+<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultatnt attribution map</i></p>
+
+[MP_test.sh](MP_test.sh): 
+Generating the attribution map for the class "freight car" using MP and MP-G algorithm.
+* Running `source MP_test.sh` produces this result:
+
+<p align="center">
+    <img src="output/MP/imagenet/out_MP.jpg" width=750px>
+    <img src="output/MPG/imagenet/out_MPG.jpg" width=750px>    
 </p>
 <p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultatnt attribution map</i></p>
 
