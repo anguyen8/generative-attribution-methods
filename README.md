@@ -23,7 +23,7 @@ Generating the attribution map for the class "freight car" using SP and SP-G alg
     <img src="output/SP/imagenet/out_SP.jpg" width=750px>
     <img src="output/SPG/imagenet/out_SPG.jpg" width=750px>    
 </p>
-<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map</i></p>
+<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for SP (top) and SP-G (bottom)</i></p>
 
 [LIME_test.sh](LIME_test.sh): 
 Generating the attribution map for the class "freight car" using LIME and LIME-G algorithm.
@@ -33,7 +33,7 @@ Generating the attribution map for the class "freight car" using LIME and LIME-G
     <img src="output/LIME/imagenet/out_LIME.jpg" width=750px>
     <img src="output/LIMEG/imagenet/out_LIMEG.jpg" width=750px>    
 </p>
-<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map</i></p>
+<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for LIME (top) and LIME-G (bottom)</i></p>
 
 [MP_test.sh](MP_test.sh): 
 Generating the attribution map for the class "freight car" using MP and MP-G algorithm.
@@ -43,7 +43,7 @@ Generating the attribution map for the class "freight car" using MP and MP-G alg
     <img src="output/MP_0/imagenet/out_MP.jpg" width=750px>
     <img src="output/MPG_1/imagenet/out_MPG.jpg" width=750px>    
 </p>
-<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map</i></p>
+<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for MP (top) and MP-G (bottom)</i></p>
 
 ## 4. Licenses
 Note that the code in this repository is licensed under MIT License, but, the pre-trained condition models used by the code have their own licenses. Please carefully check them before use. 
