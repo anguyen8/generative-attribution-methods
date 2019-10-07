@@ -8,7 +8,4 @@ This repository contains source code necessary to reproduce some of the main res
 ## 1. Setup
 
 ### Installing software
-This code is built using PyTorch. You can install the necessary libraries by pip installing the requirements text file.
-
-** **
-pip install -r ./requirements.txt
+This code is built using PyTorch. You can install the necessary libraries by pip installing the requirements text file *pip install -r ./requirements.txt*
