@@ -16,6 +16,13 @@ This repository contains source code necessary to reproduce some of the main res
 ### Installing software
 This code is built using PyTorch. You can install the necessary libraries by pip installing the requirements text file `pip install -r ./requirements.txt`
 
+**Note** We ran our codes using tensorflow_gpu-1.12.0 with CUDA 9.0. Kindly, add the following lines in your ~/.bashrc file to prevent "ImportError: libcublas.so.9.0: cannot open shared object file: No such file or directory" error.
+
+`
+export PATH=/usr/local/cuda-9.0/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+`
+
 ## 2. Usage
 The main codes for SP, LIME, and MP are in [formal_SP_single_image.py](formal_SP_single_image.py), [formal_LIME_single_image.py](formal_LIME_single_image.py), and [formal_MP_single_image.py](formal_MP_single_image.py). In addition, after installing the LIME library you will have to replace the *lime_image.py* script with our [lime_image.py](lime_image.py). Three shell scripts have been provided which for a given an [image](teaser_image.JPEG) and target class generates its respective attribution maps for an algorithm and its generative version.
 
