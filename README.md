@@ -28,7 +28,7 @@ The main codes for SP, LIME, and MP are in [formal_SP_single_image.py](formal_SP
 ### Examples
 
 [SP_test.sh](SP_test.sh): 
-Generating the attribution map for the class "kuvasz" using SP and SP-G algorithm.
+Generating the attribution map for the class "freight car" using SP and SP-G algorithm.
 * Running `source SP_test.sh` produces this result:
 
 <p align="center">
@@ -48,7 +48,7 @@ Generating the attribution map for the class "kuvasz" using LIME and LIME-G algo
 <p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for LIME (top) and LIME-G (bottom)</i></p>
 
 [MP_test.sh](MP_test.sh): 
-Generating the attribution map for the class "kuvasz" using MP and MP-G algorithm.
+Generating the attribution map for the class "freight car" using MP and MP-G algorithm.
 * Running `source MP_test.sh` produces this result:
 
 <p align="center">
