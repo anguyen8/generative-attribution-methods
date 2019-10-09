@@ -37,8 +37,8 @@ def get_arguments():
                         )
 
     parser.add_argument('--lime_superpixel_num', type=int,
-                       help='Number of super pixels used by Lime. Default=50', default=50,
-                       )
+                        help='Number of super pixels used by Lime. Default=50', default=50,
+                        )
 
     parser.add_argument('--lime_num_samples', type=int,
                         help='Number of samples used by Lime. Default=1000', default=500,

@@ -29,7 +29,7 @@ class occlusion_analysis:
         self.org_shape = org_shape
         self.batch_size = batch_size
 
-    def explain(self, neuron, loader, heatmap_type='SP', path='./'):
+    def explain(self, neuron, loader, l_map, heatmap_type='SP', path='./'):
 
         # Compute original output
         org_softmax = torch.nn.Softmax(dim=1)(self.model(self.image))
@@ -47,11 +47,19 @@ class occlusion_analysis:
             if heatmap_type == 'SP':
                 softmax_out = torch.nn.Softmax(dim=1)(self.model(data * self.image))
                 delta = eval0 - softmax_out.data[:, neuron]
+                amax, aind = softmax_out.max(dim=1)
+                gt_val = softmax_out.data[:, neuron]
 
                 # For saving intermediate steps
                 for j in range(data.shape[0])[:1]:
                     temp_img = np.uint8(255 * unnormalize(
                         np.moveaxis((data[j, :] * self.image[0, :]).cpu().detach().numpy().transpose(), 0, 1)))
+                    temp_img = add_text(temp_img, 'PT: {}({:.3f})'.format(l_map[aind[j].item()].split(",")[0],
+                                                                              amax[j].item()), x_pt=25,
+                                        scale=1, size=0.50)
+                    temp_img = add_text(temp_img,
+                                        'GT:{}({:.3f})'.format(l_map[neuron].split(",")[0], gt_val[j].item()), x_pt=25,
+                                        scale=1, size=0.50)
                     cv2.imwrite(
                         os.path.join(path, 'intermediate_{:05d}.png'.format(i * self.batch_size + j)),
                         cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
@@ -62,11 +70,18 @@ class occlusion_analysis:
                 inpaint_img = self.image * data + inpaint_img * (1 - data)
                 softmax_out = torch.nn.Softmax(dim=1)(self.model(inpaint_img))
                 delta = eval0 - softmax_out.data[:, neuron]
+                amax, aind = softmax_out.max(dim=1)
+                gt_val = softmax_out.data[:, neuron]
 
                 # For saving intermediate steps
                 for j in range(inpaint_img.shape[0])[:1]:
                     temp_img = np.uint8(255 * unnormalize(
                         np.moveaxis(inpaint_img[j, :].cpu().detach().numpy().transpose(), 0, 1)))
+                    temp_img = add_text(temp_img, 'PT: {}({:.3f})'.format(label_map[aind[j].item()].split(",")[0],
+                                                                          amax[j].item()), x_pt=25, scale=1, size=0.50)
+                    temp_img = add_text(temp_img,
+                                        'GT:{}({:.3f})'.format(label_map[neuron].split(",")[0],
+                                                               gt_val[j].item()), x_pt=25, scale=1, size=0.50)
                     cv2.imwrite(
                         os.path.join(path, 'intermediate_{:05d}.png'.format(i * self.batch_size + j)),
                         cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
@@ -119,9 +134,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.dataset == 'imagenet':
+
         model = load_model(arch_name='resnet50')
+
+        # load the class label
+        label_map = load_imagenet_label_map()
+
     elif args.dataset == 'places365':
+
         model = load_model_places365(arch_name='resnet50')
+
+        # load the class label
+        label_map = load_class_label()
     else:
         print('Invalid datasest!!')
         exit(0)
@@ -187,8 +211,9 @@ if __name__ == '__main__':
 
     # save original image
     pill_transf = get_pil_transform()
-    cv2.imwrite(os.path.join(save_path, "original.png"), cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))),
-                                                                      cv2.COLOR_BGR2RGB))
+    temp_img = add_text(np.array(pill_transf(get_image(args.img_path))), 'Real', x_pt=100, scale=1, size=0.50,
+                        text_patch=50)
+    cv2.imwrite(os.path.join(save_path, "original.png"), cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
 
     t1 = time.time()
     with torch.no_grad():
@@ -198,14 +223,18 @@ if __name__ == '__main__':
         for stride in [args.stride]:
             for p_size in [args.patch_size]:
                 heatmap = heatmap_occ.explain(neuron=gt_category, loader=trainloader,
-                                              heatmap_type=args.algo, path=save_path)
+                                              heatmap_type=args.algo, path=save_path, l_map=label_map)
                 np.save(
                     os.path.join(save_path, 'mask_{}.npy'.format(args.algo)),
                     heatmap)
 
                 # Normalize the attribution map for visualization purpose
                 heatmap = (heatmap - heatmap.min()) / (heatmap.max() - heatmap.min())
-                cv2.imwrite(os.path.join(save_path, "mask_{}.png".format(args.algo)),
-                            cv2.applyColorMap((resize(heatmap, (args.size, args.size)) * 255).astype(np.uint8), cv2.COLORMAP_VIRIDIS))
+                heatmap = (resize(heatmap, (args.size, args.size)) * 255).astype(np.uint8)
+
+                # Heatmap
+                temp_img = add_text(np.stack((heatmap, )*3, axis=2),
+                                    'Heatmap', x_pt=100, scale=1, size=0.50, text_patch=50)
+                cv2.imwrite(os.path.join(save_path, "mask_{}.png".format(args.algo)), temp_img)
 
     # print('Time taken: {:.3f}'.format(time.time() - init_time))

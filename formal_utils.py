@@ -1,4 +1,5 @@
 import os
+import cv2
 import torch
 import numpy as np
 import matplotlib
@@ -12,6 +13,35 @@ import torchvision.transforms as transforms
 from matplotlib.colors import ListedColormap
 
 use_cuda = torch.cuda.is_available()
+
+
+# Added for loading Places365 class labels
+def load_class_label():
+    file_name = './categories_places365.txt'
+    classes = list()
+    with open(file_name) as class_file:
+        for line in class_file:
+            classes.append(line.strip().split(' ')[0][3:])
+    classes = tuple(classes)
+    return classes
+
+
+# Added for loading ImageNet classes
+def load_imagenet_label_map():
+    """
+    Load ImageNet label dictionary.
+    return:
+    """
+
+    input_f = open("./imagenet_classes.txt")
+    label_map = {}
+    for line in input_f:
+        parts = line.strip().split(": ")
+        (num, label) = (int(parts[0]), parts[1].replace('"', ""))
+        label_map[num] = label
+
+    input_f.close()
+    return label_map
 
 
 def tv_norm(input, tv_beta):
@@ -279,3 +309,15 @@ def get_image(path):
     with open(os.path.abspath(path), 'rb') as f:
         with Image.open(f) as img:
             return img.convert('RGB')
+
+
+def add_text(x, text, x_pt, size, scale, text_patch=25):
+    # --- Here I created a white background to include the text ---
+    text_patch = np.zeros((text_patch, x.shape[1], 3), np.uint8)
+    text_patch[:] = (255, 255, 255)
+    # --- I then concatenated it vertically to the image with the border ---
+    vcat = cv2.vconcat((text_patch, x))
+    # --- Now I included some text ---
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.putText(vcat, text, (x_pt, 15), font, size, (0, 0, 0), scale, 0)
+    return vcat

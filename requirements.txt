@@ -2,7 +2,6 @@ absl-py==0.7.1
 astor==0.8.0
 backcall==0.1.0
 bleach==1.5.0
-certifi==2019.6.16
 cffi==1.12.3
 chardet==3.0.4
 cycler==0.10.0
@@ -25,16 +24,12 @@ Keras-Preprocessing==1.1.0
 kiwisolver==1.1.0
 lime==0.1.1.36
 Markdown==3.1.1
-matplotlib==3.1.1
-mkl-fft==1.0.12
-mkl-random==1.0.2
-mkl-service==2.3.0
-morphsnakes==2.0.1
+matplotlib==3.0.3
 networkx==2.3
-neuralgym==0.0.1
+git+https://github.com/JiahuiYu/neuralgym
 numpy==1.16.4
 olefile==0.46
-opencv-python==4.1.0.25
+opencv-python
 pandas==0.25.1
 parso==0.5.1
 patsy==0.5.1
