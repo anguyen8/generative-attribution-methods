@@ -52,8 +52,8 @@ Generating the attribution map for the class "kuvasz" using MP and MP-G algorith
 * Running `source MP_test.sh` produces this result:
 
 <p align="center">
-    <img src="output/MP_0/figure_MP.jpg" width=750px>
-    <img src="output/MPG_1/figure_MPG.jpg" width=750px>    
+    <img src="output/MP/figure_MP.jpg" width=750px>
+    <img src="output/MPG/figure_MPG.jpg" width=750px>    
 </p>
 <p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for MP (top) and MP-G (bottom)</i></p>
 
