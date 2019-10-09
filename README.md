@@ -16,7 +16,7 @@ This repository contains source code necessary to reproduce some of the main res
 ### Installing software
 This code is built using PyTorch. You can install the necessary libraries by pip installing the requirements text file `pip install -r ./requirements.txt`
 
-**Note:** We ran our codes using tensorflow_gpu-1.12.0 with CUDA 9.0. Kindly, add the following lines in your ~/.bashrc file to prevent "ImportError: libcublas.so.9.0: cannot open shared object file: No such file or directory".
+**Note:** We ran our codes using tensorflow_gpu-1.12.0 with CUDA 9.0. Add the following lines in your ~/.bashrc file if you get "ImportError: libcublas.so.9.0: cannot open shared object file: No such file or directory" on running the code.
 
 `export PATH=/usr/local/cuda-9.0/bin${PATH:+:${PATH}}`
 
@@ -28,32 +28,32 @@ The main codes for SP, LIME, and MP are in [formal_SP_single_image.py](formal_SP
 ### Examples
 
 [SP_test.sh](SP_test.sh): 
-Generating the attribution map for the class "freight car" using SP and SP-G algorithm.
+Generating the attribution map for the class "kuvasz" using SP and SP-G algorithm.
 * Running `source SP_test.sh` produces this result:
 
 <p align="center">
-    <img src="output/SP/imagenet/out_SP.jpg" width=750px>
-    <img src="output/SPG/imagenet/out_SPG.jpg" width=750px>    
+    <img src="output/SP/figure_SP.jpg" width=750px>
+    <img src="output/SPG/figure_SPG.jpg" width=750px>    
 </p>
 <p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for SP (top) and SP-G (bottom)</i></p>
 
 [LIME_test.sh](LIME_test.sh): 
-Generating the attribution map for the class "freight car" using LIME and LIME-G algorithm.
+Generating the attribution map for the class "kuvasz" using LIME and LIME-G algorithm.
 * Running `source LIME_test.sh` produces this result:
 
 <p align="center">
-    <img src="output/LIME/imagenet/out_LIME.jpg" width=750px>
-    <img src="output/LIMEG/imagenet/out_LIMEG.jpg" width=750px>    
+    <img src="output/LIME/figure_LIME.jpg" width=750px>
+    <img src="output/LIMEG/figure_LIMEG.jpg" width=750px>    
 </p>
 <p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for LIME (top) and LIME-G (bottom)</i></p>
 
 [MP_test.sh](MP_test.sh): 
-Generating the attribution map for the class "freight car" using MP and MP-G algorithm.
+Generating the attribution map for the class "kuvasz" using MP and MP-G algorithm.
 * Running `source MP_test.sh` produces this result:
 
 <p align="center">
-    <img src="output/MP_0/imagenet/out_MP.jpg" width=750px>
-    <img src="output/MPG_1/imagenet/out_MPG.jpg" width=750px>    
+    <img src="output/MP_0/figure_MP.jpg" width=750px>
+    <img src="output/MPG_1/figure_MPG.jpg" width=750px>    
 </p>
 <p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for MP (top) and MP-G (bottom)</i></p>
 
