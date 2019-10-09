@@ -225,18 +225,23 @@ if __name__ == '__main__':
     # define jitter function
     jitter = args.jitter
 
+    # Path to the output folder
+    save_path = os.path.join(args.save_path, '{}'.format(args.algo), '{}'.format(args.dataset))
+    mkdir_p(os.path.join(save_path))
+
+    # Compute original output
+    org_softmax = torch.nn.Softmax(dim=1)(model(preprocess_image(img, size)))
+    eval0 = org_softmax.data[0, gt_category]
+    pill_transf = get_pil_transform()
+    o_img_path = os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
+                              .format(label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], eval0))
+    cv2.imwrite(os.path.abspath(o_img_path), cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))), cv2.COLOR_BGR2RGB))
+
     # Convert to torch variables
-    img = preprocess_image(img, size + jitter)  # img
+    img = preprocess_image(img, size + jitter)
 
     if use_cuda:
         img = img.to('cuda')
-
-    # Path to the output folder
-    save_path = os.path.join(args.save_path, '{}_{}'.format(args.algo, str(args.perturb_binary)),
-                             '{}'.format(args.dataset))
-
-    if not os.path.isdir(os.path.join(save_path)):
-        mkdir_p(os.path.join(save_path))
 
     # Modified
     if args.mask_init == 'random':
@@ -261,14 +266,6 @@ if __name__ == '__main__':
         null_img = preprocess_image(get_blurred_img(np.float32(original_img), radius=10), size + jitter)
 
     optimizer = torch.optim.Adam([mask], lr=learning_rate)
-
-    # Compute original output
-    org_softmax = torch.nn.Softmax(dim=1)(model(img))
-    eval0 = org_softmax.data[0, gt_category]
-    pill_transf = get_pil_transform()
-    cv2.imwrite(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
-                             .format(label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], eval0)),
-                cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))), cv2.COLOR_BGR2RGB))
 
     for i in range(max_iterations):
         if jitter != 0:
@@ -341,12 +338,12 @@ if __name__ == '__main__':
                                 255 * unnormalize(
                                     np.moveaxis(perturbated_input[0, :].cpu().detach().numpy().transpose(), 0, 1)))
         cv2.imwrite(
-            os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
+            os.path.abspath(os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
                          .format(i, label_map[aind.item()].split(',')[0].split(' ')[0].split('-')[0],
                                  amax.item(), label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0],
-                                 gt_val.item())), cv2.cvtColor(temp_intermediate, cv2.COLOR_BGR2RGB))
+                                 gt_val.item()))), cv2.cvtColor(temp_intermediate, cv2.COLOR_BGR2RGB))
 
-    np.save(os.path.join(save_path, "mask_{}.npy".format(args.algo)),
+    np.save(os.path.abspath(os.path.join(save_path, "mask_{}.npy".format(args.algo))),
             1 - mask.cpu().detach().numpy()[0, 0, :])
 
     # print('Time taken: {:.3f}'.format(time.time() - init_time))

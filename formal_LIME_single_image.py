@@ -260,12 +260,12 @@ if __name__ == '__main__':
     # print('Time taken: {:.3f} secs'.format(time.time()-init_time))
 
     # SAVE raw numpy values
-    np.save(os.path.join(save_path, "mask_{}.npy".format(args.algo)), pytorch_heatmap)
+    np.save(os.path.abspath(os.path.join(save_path, "mask_{}.npy".format(args.algo))), pytorch_heatmap)
 
     # Compute original output
     org_softmax = pytorch_model(pytorch_img)
     eval0 = org_softmax.data[0, true_class]
     pill_transf = get_pil_transform()
-    cv2.imwrite(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
-                             .format(label_map[true_class].split(',')[0].split(' ')[0].split('-')[0], eval0)),
+    cv2.imwrite(os.path.abspath(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
+                             .format(label_map[true_class].split(',')[0].split(' ')[0].split('-')[0], eval0))),
                 cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))), cv2.COLOR_BGR2RGB))

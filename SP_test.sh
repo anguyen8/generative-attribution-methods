@@ -3,8 +3,8 @@
 # Chirag Agarwal <chiragagarwall12.gmail.com>
 # 2019
 
-img_path='example.JPEG'
-true_class=222
+img_path='example_2.JPEG'
+true_class=350
 dataset='imagenet'
 weight_file='./generative_inpainting/model_logs/release_imagenet_256/'
 save_path='./output/'

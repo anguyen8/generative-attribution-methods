@@ -55,10 +55,10 @@ class occlusion_analysis:
                     temp_img = np.uint8(255 * unnormalize(
                         np.moveaxis((data[j, :] * self.image[0, :]).cpu().detach().numpy().transpose(), 0, 1)))
                     cv2.imwrite(
-                        os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                        os.path.abspath(os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
                                      .format(i * self.batch_size + j, l_map[aind[j].item()].split(',')[0].split(' ')[0].split('-')[0],
                                              amax[j].item(), l_map[neuron].split(',')[0].split(' ')[0].split('-')[0],
-                                             gt_val[j].item())),
+                                             gt_val[j].item()))),
                         cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
 
             elif heatmap_type == 'SPG':
@@ -74,10 +74,10 @@ class occlusion_analysis:
                     temp_img = np.uint8(255 * unnormalize(
                         np.moveaxis(inpaint_img[j, :].cpu().detach().numpy().transpose(), 0, 1)))
                     cv2.imwrite(
-                        os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                        os.path.abspath(os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
                                      .format(i * self.batch_size + j, l_map[aind[j].item()].split(',')[0].split(' ')[0].split('-')[0],
                                              amax[j].item(), l_map[neuron].split(',')[0].split(' ')[0].split('-')[0],
-                                             gt_val[j].item())),
+                                             gt_val[j].item()))),
                         cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
 
             batch_heatmap = torch.cat((batch_heatmap, delta))
@@ -208,8 +208,8 @@ if __name__ == '__main__':
     org_softmax = torch.nn.Softmax(dim=1)(model(img))
     eval0 = org_softmax.data[0, gt_category]
     pill_transf = get_pil_transform()
-    cv2.imwrite(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
-                             .format(label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], eval0)),
+    cv2.imwrite(os.path.abspath(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
+                             .format(label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], eval0))),
                 cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))), cv2.COLOR_BGR2RGB))
 
     t1 = time.time()
@@ -222,7 +222,7 @@ if __name__ == '__main__':
                 heatmap = heatmap_occ.explain(neuron=gt_category, loader=trainloader,
                                               heatmap_type=args.algo, path=save_path, l_map=label_map)
                 np.save(
-                    os.path.join(save_path, 'mask_{}.npy'.format(args.algo)),
+                    os.path.abspath(os.path.join(save_path, 'mask_{}.npy'.format(args.algo))),
                     heatmap)
 
     # print('Time taken: {:.3f}'.format(time.time() - init_time))
