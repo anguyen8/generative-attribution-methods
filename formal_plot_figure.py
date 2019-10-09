@@ -43,10 +43,13 @@ if __name__ == '__main__':
     heatmap = resize(np.load(os.path.join(args.result_path, args.dataset, heatmap_path)), (224, 224))
 
     # Read intermediate perturbed images
-    intermediate_path = [j for j in os.listdir(os.path.join(args.result_path, args.dataset, 'intermediate_steps'))
-                         if j.startswith('intermediate_')]
-    random.seed(0)
-    intermediate_path = random.choices(intermediate_path, k=5)
+    intermediate_path = sorted([j for j in os.listdir(os.path.join(args.result_path, args.dataset,
+                                                                   'intermediate_steps')) if j.startswith('intermediate_')])
+
+    # randomly select five samples
+    random.seed(a=0)
+    random_ind = random.sample(range(len(intermediate_path)), 5)
+    intermediate_path = [intermediate_path[i] for i in random_ind]
     intermediate = [cv2.cvtColor(cv2.imread(os.path.join(args.result_path, args.dataset, 'intermediate_steps', j), 1),
                                  cv2.COLOR_BGR2RGB) for j in intermediate_path]
     labels.extend([' '.join(j.split('_')[2:4]) for j in intermediate_path])

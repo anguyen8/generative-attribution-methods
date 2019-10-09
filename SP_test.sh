@@ -9,7 +9,7 @@ dataset='imagenet'
 weight_file='./generative_inpainting/model_logs/release_imagenet_256/'
 save_path='./output/'
 algo_1='SP'
-patch_size=29
+patch_size=53
 stride=3
 
 # SP
