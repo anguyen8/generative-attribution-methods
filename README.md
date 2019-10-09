@@ -4,7 +4,7 @@ This repository contains source code necessary to reproduce some of the main res
 
 **If you use this software in an academic article, please consider citing:**
     
-    @article{agarwal2019,
+    @article{agarwal2019removing,
         title={Removing input features via a generative model to explain their attributions to classifier's decisions},
         author={Agarwal, Chirag and Schonfeld, Dan and Nguyen, Anh},
         journal={arXiv preprint arXiv:},
