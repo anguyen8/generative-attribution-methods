@@ -4,7 +4,7 @@
 # 2019
 
 img_path='example_2.JPEG'
-true_class=350
+true_class=565
 dataset='imagenet'
 weight_file='./generative_inpainting/model_logs/release_imagenet_256/'
 save_path='./output/'
