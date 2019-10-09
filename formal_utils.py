@@ -176,17 +176,17 @@ def zero_out_plot_multiple_patch(grid,
                   dpi=224,
                   ):
 
-    plt.rcParams['axes.linewidth'] = 0.1
+    plt.rcParams['axes.linewidth'] = 0.0  # set the value globally
     plt.rcParams.update({'font.size': 5})
     plt.rc("font", family="sans-serif")
     plt.rc("axes.spines", top=True, right=True, left=True, bottom=True)
     image_size = (grid[0][0]).shape[0]
     nRows = len(grid)
     nCols = len(grid[0])
-    tRows = nRows + 2
-    tCols = nCols + 1
+    tRows = nRows + 2  # total rows
+    tCols = nCols + 1  # total cols
     wFig = tCols
-    hFig = tRows
+    hFig = tRows  # Figure height (one more than nRows becasue I want to add xlabels to the top of figure)
     fig, axes = plt.subplots(nrows=tRows, ncols=tCols, figsize=(wFig, hFig))
     fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
     axes = np.reshape(axes, (tRows, tCols))
@@ -203,8 +203,9 @@ def zero_out_plot_multiple_patch(grid,
     cMap.colors[257//2, :] = [1, 1, 1, 1]
 
     #######
-    scale = 0.9
-    fontsize = 5
+    scale = 0.99
+    fontsize = 15
+    o_img = grid[0][0]
     for r in range(tRows):
         # if r <= 1:
         for c in range(tCols):
@@ -217,6 +218,7 @@ def zero_out_plot_multiple_patch(grid,
             ax.spines['left'].set_visible(False)
             ax.set_xticks([])
             ax.set_yticks([])
+
             if r > 0 and c > 0 and r < tRows - 1:
                 img_data = grid[r - 1][c - 1]
                 abs_min = np.amin(img_data)
@@ -227,27 +229,31 @@ def zero_out_plot_multiple_patch(grid,
                 r_abs_mx = round(max(np.abs(abs_min), np.abs(abs_max)), 2)
 
                 # Orig Image
-                if c == 1:
+                if r == 1 and c == 1:
                     im = ax.imshow(img_data, interpolation='none')
-                    ax.spines['top'].set_visible(True)
-                    ax.spines['right'].set_visible(True)
-                    ax.spines['bottom'].set_visible(True)
-                    ax.spines['left'].set_visible(True)
+                    ax.spines['top'].set_visible(False)
+                    ax.spines['right'].set_visible(False)
+                    ax.spines['bottom'].set_visible(False)
+                    ax.spines['left'].set_visible(False)
+
                 else:
+                    # im = ax.imshow(o_img, interpolation='none', cmap=cMap, vmin=-1, vmax=1)
                     im = ax.imshow(img_data, interpolation='none', cmap=cMap, vmin=-1, vmax=1)
-                    ax.spines['top'].set_visible(True)
-                    ax.spines['right'].set_visible(True)
-                    ax.spines['bottom'].set_visible(True)
-                    ax.spines['left'].set_visible(True)
+                    ax.spines['top'].set_visible(False)
+                    ax.spines['right'].set_visible(False)
+                    ax.spines['bottom'].set_visible(False)
+                    ax.spines['left'].set_visible(False)
+                    # save 1
 
                 zero = 0
-                if not r - 1:
+                if r < tRows:  # not r - 1:
                     if col_labels != []:
                         # ipdb.set_trace()
-                        ax.set_title(col_labels[c - 1],  #  + '\n' + f'max: {str(r_abs_max)}, min: {str(r_abs_min)}'
-                                     horizontalalignment='center',
-                                     verticalalignment='bottom',
-                                     fontsize=fontsize, pad=5)
+                        ax.set_xlabel(col_labels[c - 1],
+                                      # + '\n' + f'max: {str(r_abs_max)}, min: {str(r_abs_min)}'
+                                      horizontalalignment='center',
+                                      verticalalignment='bottom',
+                                      fontsize=9, labelpad=17)
                 if c == tCols - 2:
                     if row_labels_right != []:
                         txt_right = [l + '\n' for l in row_labels_right[r - 1]]
@@ -262,35 +268,35 @@ def zero_out_plot_multiple_patch(grid,
                                        verticalalignment='center',
                                        horizontalalignment='left',
                                        fontsize=fontsize)
-                if not c - 1:
+                if c == 1:  # (not c - 1) or (not c - 2) or (not c - 4) or (not c - 6):
                     if row_labels_left != []:
                         txt_left = [l + '\n' for l in row_labels_left[r - 1]]
-                        ax.set_ylabel(''.join(txt_left),
-                                      rotation=0,
-                                      verticalalignment='center',
-                                      horizontalalignment='center',
+                        ax.set_ylabel(''.join(row_labels_left[0]),
+                                      # rotation=0,
+                                      # verticalalignment='center',
+                                      # horizontalalignment='center',
                                       fontsize=fontsize)
                 # else:
-                if c > 1: #!= 1:
-                    w_cbar = 0.005
-                    h_cbar = h * scale
+                if c == tCols - 1:  # > 1 # != 1:
+                    w_cbar = 0.009
+                    h_cbar = h * 0.9  # scale
                     b_cbar = b
                     l_cbar = l + scale * w + 0.001
-                    cbaxes = fig.add_axes([l_cbar, b_cbar, w_cbar, h_cbar])
+                    cbaxes = fig.add_axes([l_cbar + 0.015, b_cbar + 0.015, w_cbar, h_cbar])
                     cbar = fig.colorbar(im, cax=cbaxes)
                     cbar.outline.set_visible(False)
-                    cbar.ax.tick_params(labelsize=4, width=0.2, length=1.2, direction='inout', pad=0.5)
-                    tt = abs_mx
+                    cbar.ax.tick_params(labelsize=15, width=0.2, length=1.2, direction='inout', pad=0.5)
+                    tt = 1
                     cbar.set_ticks([])
-                    # cbar.set_ticks([-tt, zero, tt])
-                    # cbar.set_ticklabels([-r_abs_mx, zero, r_abs_mx])
+                    cbar.set_ticks([-tt, zero, tt])
+                    cbar.set_ticklabels([-1, zero, 1])
 
         #####################################################################################
     dir_path = folderName
-    print(f'Saving figure to {os.path.join(dir_path, file_name)}')
+    # print(f'Saving figure to {os.path.join(dir_path, file_name)}')
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-
+    plt.subplots_adjust(wspace=0, hspace=0)
     plt.savefig(os.path.join(dir_path, file_name), dpi=dpi / scale, transparent=True,
                 bbox_inches='tight', pad_inches=0)
     plt.close(fig)
@@ -309,15 +315,3 @@ def get_image(path):
     with open(os.path.abspath(path), 'rb') as f:
         with Image.open(f) as img:
             return img.convert('RGB')
-
-
-def add_text(x, text, x_pt, size, scale, text_patch=25):
-    # --- Here I created a white background to include the text ---
-    text_patch = np.zeros((text_patch, x.shape[1], 3), np.uint8)
-    text_patch[:] = (255, 255, 255)
-    # --- I then concatenated it vertically to the image with the border ---
-    vcat = cv2.vconcat((text_patch, x))
-    # --- Now I included some text ---
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(vcat, text, (x_pt, 15), font, size, (0, 0, 0), scale, 0)
-    return vcat

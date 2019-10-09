@@ -54,19 +54,15 @@ class occlusion_analysis:
                 for j in range(data.shape[0])[:1]:
                     temp_img = np.uint8(255 * unnormalize(
                         np.moveaxis((data[j, :] * self.image[0, :]).cpu().detach().numpy().transpose(), 0, 1)))
-                    temp_img = add_text(temp_img, 'PT: {}({:.3f})'.format(l_map[aind[j].item()].split(",")[0],
-                                                                              amax[j].item()), x_pt=25,
-                                        scale=1, size=0.50)
-                    temp_img = add_text(temp_img,
-                                        'GT:{}({:.3f})'.format(l_map[neuron].split(",")[0], gt_val[j].item()), x_pt=25,
-                                        scale=1, size=0.50)
                     cv2.imwrite(
-                        os.path.join(path, 'intermediate_{:05d}.png'.format(i * self.batch_size + j)),
+                        os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                                     .format(i * self.batch_size + j, l_map[aind[j].item()].split(',')[0].split(' ')[0].split('-')[0],
+                                             amax[j].item(), l_map[neuron].split(',')[0].split(' ')[0].split('-')[0],
+                                             gt_val[j].item())),
                         cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
 
             elif heatmap_type == 'SPG':
                 inpaint_img, _ = impant_model.generate_background(self.image, data, batch_process=True)
-                # inpaint_img = self.image.to(data.device) * data + inpaint_img.to(data.device) * (1 - data)
                 inpaint_img = self.image * data + inpaint_img * (1 - data)
                 softmax_out = torch.nn.Softmax(dim=1)(self.model(inpaint_img))
                 delta = eval0 - softmax_out.data[:, neuron]
@@ -77,13 +73,11 @@ class occlusion_analysis:
                 for j in range(inpaint_img.shape[0])[:1]:
                     temp_img = np.uint8(255 * unnormalize(
                         np.moveaxis(inpaint_img[j, :].cpu().detach().numpy().transpose(), 0, 1)))
-                    temp_img = add_text(temp_img, 'PT: {}({:.3f})'.format(label_map[aind[j].item()].split(",")[0],
-                                                                          amax[j].item()), x_pt=25, scale=1, size=0.50)
-                    temp_img = add_text(temp_img,
-                                        'GT:{}({:.3f})'.format(label_map[neuron].split(",")[0],
-                                                               gt_val[j].item()), x_pt=25, scale=1, size=0.50)
                     cv2.imwrite(
-                        os.path.join(path, 'intermediate_{:05d}.png'.format(i * self.batch_size + j)),
+                        os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                                     .format(i * self.batch_size + j, l_map[aind[j].item()].split(',')[0].split(' ')[0].split('-')[0],
+                                             amax[j].item(), l_map[neuron].split(',')[0].split(' ')[0].split('-')[0],
+                                             gt_val[j].item())),
                         cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
 
             batch_heatmap = torch.cat((batch_heatmap, delta))
@@ -210,10 +204,13 @@ if __name__ == '__main__':
     mkdir_p(save_path)
 
     # save original image
+    # Compute original output
+    org_softmax = torch.nn.Softmax(dim=1)(model(img))
+    eval0 = org_softmax.data[0, gt_category]
     pill_transf = get_pil_transform()
-    temp_img = add_text(np.array(pill_transf(get_image(args.img_path))), 'Real', x_pt=100, scale=1, size=0.50,
-                        text_patch=50)
-    cv2.imwrite(os.path.join(save_path, "original.png"), cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB))
+    cv2.imwrite(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
+                             .format(label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], eval0)),
+                cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))), cv2.COLOR_BGR2RGB))
 
     t1 = time.time()
     with torch.no_grad():
@@ -227,14 +224,5 @@ if __name__ == '__main__':
                 np.save(
                     os.path.join(save_path, 'mask_{}.npy'.format(args.algo)),
                     heatmap)
-
-                # Normalize the attribution map for visualization purpose
-                heatmap = (heatmap - heatmap.min()) / (heatmap.max() - heatmap.min())
-                heatmap = (resize(heatmap, (args.size, args.size)) * 255).astype(np.uint8)
-
-                # Heatmap
-                temp_img = add_text(np.stack((heatmap, )*3, axis=2),
-                                    'Heatmap', x_pt=100, scale=1, size=0.50, text_patch=50)
-                cv2.imwrite(os.path.join(save_path, "mask_{}.png".format(args.algo)), temp_img)
 
     # print('Time taken: {:.3f}'.format(time.time() - init_time))

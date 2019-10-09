@@ -153,8 +153,15 @@ if __name__ == '__main__':
 
     if args.dataset == 'imagenet':
         pytorch_model = load_orig_imagenet_model(arch_name='resnet50')
+
+        # load the class label
+        label_map = load_imagenet_label_map()
+
     elif args.dataset == 'places365':
         pytorch_model = load_orig_places365_model(arch_name='resnet50')
+
+        # load the class label
+        label_map = load_class_label()
 
     else:
         print('Invalid datasest!!')
@@ -171,7 +178,6 @@ if __name__ == '__main__':
     pytorch_preprocess_transform = get_pytorch_preprocess_transform()
 
     def pytorch_batch_predict(images):
-
         batch = torch.stack(tuple(pytorch_preprocess_transform(i) for i in images), dim=0)
         batch = batch.to('cuda')
 
@@ -242,7 +248,7 @@ if __name__ == '__main__':
                                                                   fill_type=args.algo,
                                                                   num_super_pixel=args.lime_superpixel_num,
                                                                   sav_path=save_intermediate,
-                                                                  target_category=true_class)
+                                                                  target_category=true_class, l_map=label_map)
     pytorch_segments = pytorch_lime_explanation.segments
     pytorch_heatmap = np.zeros(pytorch_segments.shape)
     local_exp = pytorch_lime_explanation.local_exp
@@ -256,9 +262,10 @@ if __name__ == '__main__':
     # SAVE raw numpy values
     np.save(os.path.join(save_path, "mask_{}.npy".format(args.algo)), pytorch_heatmap)
 
-    # Normalize the attribution map for visualization purpose
-    pytorch_heatmap = (pytorch_heatmap - pytorch_heatmap.min()) / (pytorch_heatmap.max() - pytorch_heatmap.min())
-
-    cv2.imwrite(os.path.join(save_path, "original.png".format(args.algo)), cv2.cvtColor(lime_img, cv2.COLOR_BGR2RGB))
-    cv2.imwrite(os.path.join(save_path, "mask_{}.png".format(args.algo)),
-                cv2.applyColorMap((pytorch_heatmap * 255).astype(np.uint8), cv2.COLORMAP_VIRIDIS))
+    # Compute original output
+    org_softmax = pytorch_model(pytorch_img)
+    eval0 = org_softmax.data[0, true_class]
+    pill_transf = get_pil_transform()
+    cv2.imwrite(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
+                             .format(label_map[true_class].split(',')[0].split(' ')[0].split('-')[0], eval0)),
+                cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))), cv2.COLOR_BGR2RGB))

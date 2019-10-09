@@ -125,7 +125,7 @@ class LimeImageExplainer(object):
         self.feature_selection = feature_selection
         self.base = lime_base.LimeBase(kernel_fn, verbose, random_state=self.random_state)
 
-    def explain_instance(self, image, pytorch_img, inpaint_model, classifier_fn, labels=(1,),
+    def explain_instance(self, image, pytorch_img, inpaint_model, classifier_fn, l_map, labels=(1,),
                          hide_color=None,
                          top_labels=5, num_features=100000, num_samples=1000,
                          batch_size=10,
@@ -192,7 +192,7 @@ class LimeImageExplainer(object):
         top = labels
 
         data, labels = self.data_labels(image, pytorch_img, inpaint_model, fudged_image, segments,
-                                        classifier_fn, num_samples,
+                                        classifier_fn, num_samples, label_map=l_map,
                                         batch_size=batch_size, f_type=fill_type, num_super_pixel=num_super_pixel, save_path=sav_path, gt_category=target_category)
         # import ipdb
         # ipdb.set_trace()
@@ -232,7 +232,7 @@ class LimeImageExplainer(object):
                     fudged_image,
                     segments,
                     classifier_fn,
-                    num_samples,
+                    num_samples, label_map,
                     batch_size=10, f_type='LIME', num_super_pixel=50, save_path='', gt_category=0):
         """Generates images and predictions in the neighborhood of this image.
 
@@ -277,7 +277,15 @@ class LimeImageExplainer(object):
                     temp_mask = torch.cat((temp_mask, (1 - torch.from_numpy(mask).unsqueeze(0).float()).expand(3, mask.shape[0], mask.shape[1]).unsqueeze(0)), dim=0)
 
             if f_type == 'LIME':
-                plt.imsave(os.path.join(save_path, 'intermediate_{:04d}.jpg'.format(ind)), temp)
+                # Save intermediate steps
+                outputs = classifier_fn(np.array([temp]))
+                amax, aind = outputs.max(dim=1)
+                gt_val = outputs.data[:, gt_category]
+                cv2.imwrite(
+                    os.path.join(save_path, 'intermediate_{:04d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                                 .format(ind, label_map[aind.item()].split(',')[0].split(' ')[0].split('-')[0],
+                                         amax.item(), label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0],
+                                         gt_val.item())), cv2.cvtColor(np.array([temp])[0, :], cv2.COLOR_BGR2RGB))
                 ind += 1           
             
             imgs.append(temp)
@@ -290,7 +298,14 @@ class LimeImageExplainer(object):
                     preds = classifier_fn(inpaint_img)
                     for ii in range(batch_size):
                        temp_output = classifier_fn(np.expand_dims(inpaint_img[ii, :], axis=0))
-                       plt.imsave(os.path.join(save_path, 'intermediate_{:04d}.jpg'.format(ind*batch_size + ii)), inpaint_img[ii, :])
+                       # Save intermediate steps
+                       amax, aind = temp_output.max(dim=1)
+                       gt_val = temp_output.data[:, gt_category]
+                       cv2.imwrite(os.path.join(save_path, 'intermediate_{:04d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                           .format(ind*batch_size + ii, label_map[aind.item()].split(',')[0].split(' ')[0].split('-')[0], 
+                               amax.item(), label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], 
+                               gt_val.item())), cv2.cvtColor(inpaint_img[ii, :], cv2.COLOR_BGR2RGB))
+
                     ind += 1
                     labels.extend(preds.data.cpu().numpy())
                     temp_mask = torch.tensor([])

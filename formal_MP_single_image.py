@@ -180,8 +180,14 @@ if __name__ == '__main__':
     if args.dataset == 'imagenet':
         model = load_model(arch_name='resnet50')
 
+        # load the class label
+        label_map = load_imagenet_label_map()
+
     elif args.dataset == 'places365':
         model = load_model_places365(arch_name='resnet50')
+
+        # load the class label
+        label_map = load_class_label()
 
     else:
         print('Invalid datasest!!')
@@ -256,9 +262,14 @@ if __name__ == '__main__':
 
     optimizer = torch.optim.Adam([mask], lr=learning_rate)
 
-    l1 = []
-    l2 = []
-    l3 = []
+    # Compute original output
+    org_softmax = torch.nn.Softmax(dim=1)(model(img))
+    eval0 = org_softmax.data[0, gt_category]
+    pill_transf = get_pil_transform()
+    cv2.imwrite(os.path.join(save_path, 'real_{}_{:.3f}_image.jpg'
+                             .format(label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], eval0)),
+                cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))), cv2.COLOR_BGR2RGB))
+
     for i in range(max_iterations):
         if jitter != 0:
             j1 = np.random.randint(jitter)
@@ -324,24 +335,18 @@ if __name__ == '__main__':
         mkdir_p(path)
 
         # Save intermediate steps
+        amax, aind = outputs.max(dim=1)
+        gt_val = outputs.data[:, gt_category]
         temp_intermediate = np.uint8(
                                 255 * unnormalize(
                                     np.moveaxis(perturbated_input[0, :].cpu().detach().numpy().transpose(), 0, 1)))
-        cv2.imwrite(os.path.join(path, "intermediate_{:03d}.jpg"
-                                 .format(i)), cv2.cvtColor(temp_intermediate, cv2.COLOR_BGR2RGB))
+        cv2.imwrite(
+            os.path.join(path, 'intermediate_{:05d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                         .format(i, label_map[aind.item()].split(',')[0].split(' ')[0].split('-')[0],
+                                 amax.item(), label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0],
+                                 gt_val.item())), cv2.cvtColor(temp_intermediate, cv2.COLOR_BGR2RGB))
 
     np.save(os.path.join(save_path, "mask_{}.npy".format(args.algo)),
             1 - mask.cpu().detach().numpy()[0, 0, :])
-
-    # Normalize the attribution map for visualization purpose
-    mask = 1 - (mask - mask.min()) / (mask.max() - mask.min())
-    cv2.imwrite(os.path.join(save_path, "mask_{}.png".format(args.algo)),
-                cv2.applyColorMap((resize(mask.cpu().detach().numpy()[0, 0, :],
-                                          (args.size, args.size)) * 255).astype(np.uint8), cv2.COLORMAP_VIRIDIS))
-
-    # save original image
-    pill_transf = get_pil_transform()
-    cv2.imwrite(os.path.join(save_path, "original.png"), cv2.cvtColor(np.array(pill_transf(get_image(args.img_path))),
-                                                                      cv2.COLOR_BGR2RGB))
 
     # print('Time taken: {:.3f}'.format(time.time() - init_time))
