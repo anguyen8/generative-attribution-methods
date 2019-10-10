@@ -14,7 +14,7 @@ This repository contains source code necessary to reproduce some of the main res
 ## 1. Setup
 
 ### Installing software
-This code is built using PyTorch. You can install the necessary libraries by pip installing the requirements text file `pip install -r ./requirements.txt`
+This repository is built using PyTorch. You can install the necessary libraries by pip installing the requirements text file `pip install -r ./requirements.txt`
 
 **Note:** We ran our codes using tensorflow_gpu-1.12.0 with CUDA 9.0. Add the following lines in your ~/.bashrc file if you get "ImportError: libcublas.so.9.0: cannot open shared object file: No such file or directory" on running the code.
 
