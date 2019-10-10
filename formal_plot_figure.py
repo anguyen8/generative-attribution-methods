@@ -31,7 +31,14 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # result_path ./output/SP/
+    if args.algo == 'SPG':
+        row_label = ['SP-G']
+    elif args.algo == 'LIMEG':
+        row_label = ['LIME-G']
+    elif args.algo == 'MPG':
+        row_label = ['MP-G']
+    else:
+        row_label = [args.algo]
 
     # Read real image
     o_img_path = [f for f in os.listdir(os.path.join(args.result_path, args.dataset)) if f.startswith('real')][0]
@@ -61,7 +68,7 @@ if __name__ == '__main__':
     image_batch.extend([heatmap])
     zero_out_plot_multiple_patch([image_batch],
                                  folderName='./',
-                                 row_labels_left=[args.algo],
+                                 row_labels_left=row_label,
                                  row_labels_right=[],
                                  col_labels=labels,
                                  file_name=os.path.join(args.save_path, 'figure_{}.jpg'.format(args.algo)))
