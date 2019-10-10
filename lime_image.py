@@ -282,10 +282,10 @@ class LimeImageExplainer(object):
                 amax, aind = outputs.max(dim=1)
                 gt_val = outputs.data[:, gt_category]
                 cv2.imwrite(
-                    os.path.abspath(os.path.join(save_path, 'intermediate_{:04d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                    os.path.join(save_path, 'intermediate_{:04d}_{}_{:.3f}_{}_{:.3f}.jpg'
                                  .format(ind, label_map[aind.item()].split(',')[0].split(' ')[0].split('-')[0],
                                          amax.item(), label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0],
-                                         gt_val.item()))), cv2.cvtColor(np.array([temp])[0, :], cv2.COLOR_BGR2RGB))
+                                         gt_val.item())), cv2.cvtColor(np.array([temp])[0, :], cv2.COLOR_BGR2RGB))
                 ind += 1           
             
             imgs.append(temp)
@@ -301,10 +301,10 @@ class LimeImageExplainer(object):
                        # Save intermediate steps
                        amax, aind = temp_output.max(dim=1)
                        gt_val = temp_output.data[:, gt_category]
-                       cv2.imwrite(os.path.abspath(os.path.join(save_path, 'intermediate_{:04d}_{}_{:.3f}_{}_{:.3f}.jpg'
+                       cv2.imwrite(os.path.join(save_path, 'intermediate_{:04d}_{}_{:.3f}_{}_{:.3f}.jpg'
                            .format(ind*batch_size + ii, label_map[aind.item()].split(',')[0].split(' ')[0].split('-')[0], 
                                amax.item(), label_map[gt_category].split(',')[0].split(' ')[0].split('-')[0], 
-                               gt_val.item()))), cv2.cvtColor(inpaint_img[ii, :], cv2.COLOR_BGR2RGB))
+                               gt_val.item())), cv2.cvtColor(inpaint_img[ii, :], cv2.COLOR_BGR2RGB))
 
                     ind += 1
                     labels.extend(preds.data.cpu().numpy())
