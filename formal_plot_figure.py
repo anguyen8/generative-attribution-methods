@@ -52,7 +52,7 @@ if __name__ == '__main__':
     intermediate_path = [intermediate_path[i] for i in random_ind]
     intermediate = [cv2.cvtColor(cv2.imread(os.path.join(args.result_path, args.dataset, 'intermediate_steps', j), 1),
                                  cv2.COLOR_BGR2RGB) for j in intermediate_path]
-    labels.extend([' '.join(j.split('_')[2:4]) for j in intermediate_path])
+    labels.extend([' '.join(j.split('.jpg')[0].split('_')[2:6]) for j in intermediate_path])
     labels.extend([''])
 
     # Make a list of all images to be plotted

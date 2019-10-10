@@ -246,14 +246,21 @@ def zero_out_plot_multiple_patch(grid,
                     # save 1
 
                 zero = 0
-                if r < tRows:  # not r - 1:
+                if r < tRows:
                     if col_labels != []:
+                        # import ipdb
                         # ipdb.set_trace()
-                        ax.set_xlabel(col_labels[c - 1],
-                                      # + '\n' + f'max: {str(r_abs_max)}, min: {str(r_abs_min)}'
-                                      horizontalalignment='center',
-                                      verticalalignment='bottom',
-                                      fontsize=9, labelpad=17)
+                        if c == 1:
+                            ax.set_xlabel(col_labels[c - 1],
+                                          horizontalalignment='center',
+                                          verticalalignment='bottom',
+                                          fontsize=9, labelpad=17)
+                        else:
+                            temp_label = col_labels[c - 1].split(' ')
+                            ax.set_xlabel(' '.join(temp_label[:2]) + '\n' + ' '.join(temp_label[-2:]),
+                                          horizontalalignment='center',
+                                          verticalalignment='bottom',
+                                          fontsize=9, labelpad=21)
                 if c == tCols - 2:
                     if row_labels_right != []:
                         txt_right = [l + '\n' for l in row_labels_right[r - 1]]
