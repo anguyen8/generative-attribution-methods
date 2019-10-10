@@ -29,5 +29,6 @@ python formal_plot_figure.py --result_path ${save_path}/${algo_2} --dataset ${da
 
 convert ${save_path}/${algo_2}/figure_${algo_2}.jpg -trim ${save_path}/${algo_2}/figure_${algo_2}.jpg
 
-imgcat ${save_path}/${algo_1}/figure_${algo_1}.jpg
-imgcat ${save_path}/${algo_2}/figure_${algo_2}.jpg
+# Displaying figure
+montage -quiet ${save_path}/${algo_1}/figure_${algo_1}.jpg ${save_path}/${algo_2}/figure_${algo_2}.jpg -tile 1x -geometry +2+2 ${save_path}/test_SP.jpg
+imgcat ${save_path}/test_SP.jpg
