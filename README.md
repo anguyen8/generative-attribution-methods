@@ -4,12 +4,14 @@ This repository contains source code necessary to reproduce some of the main res
 
 **If you use this software in an academic article, please consider citing:**
     
-    @article{agarwal2019removing,
-        title={Removing input features via a generative model to explain their attributions to classifier's decisions},
-        author={Agarwal, Chirag and Schonfeld, Dan and Nguyen, Anh},
-        journal={arXiv preprint arXiv:2879044},
-        year={2019}
-    }
+    @misc{agarwal2019removing,
+    title={Removing input features via a generative model to explain their attributions to classifier's decisions},
+    author={Chirag Agarwal and Dan Schonfeld and Anh Nguyen},
+    year={2019},
+    eprint={1910.04256},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG}
+}
     
 ## 1. Setup
 
