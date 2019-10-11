@@ -11,7 +11,6 @@ This repository contains source code necessary to reproduce some of the main res
     eprint={1910.04256},
     archivePrefix={arXiv},
     primaryClass={cs.LG}
-}
     
 ## 1. Setup
 
