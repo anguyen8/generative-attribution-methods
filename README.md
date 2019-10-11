@@ -1,8 +1,8 @@
 ## Removing input features via a generative model to explain their attributions to classifier's decisions
 
-This repository contains source code necessary to reproduce some of the main results in the paper:
+This repository contains source code necessary to reproduce some of the main results in [the paper](https://arxiv.org/abs/1910.04256):
 
-**If you use this software in an academic article, please consider citing:**
+**If you use this software, please consider citing:**
     
     @misc{agarwal2019removing,
     title={Removing input features via a generative model to explain their attributions to classifier's decisions},
