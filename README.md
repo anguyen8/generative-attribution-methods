@@ -4,13 +4,13 @@ This repository contains source code necessary to reproduce some of the main res
 
 **If you use this software, please consider citing:**
     
-    @misc{agarwal2019removing,
-    title={Removing input features via a generative model to explain their attributions to classifier's decisions},
-    author={Chirag Agarwal and Dan Schonfeld and Anh Nguyen},
-    year={2019},
-    eprint={1910.04256},
-    archivePrefix={arXiv},
-    primaryClass={cs.LG}
+    @inproceedings{agarwal2020explaining,
+      title={Explaining an image classifier's decisions using generative models},
+      author={Agarwal, Chirag and Nguyen, Anh},
+      year={2020},
+      booktitle={Proceedings of the Asian Conference on Computer Vision (ACCV)},
+      year={2020}
+    }
     
 ## 1. Setup
 
