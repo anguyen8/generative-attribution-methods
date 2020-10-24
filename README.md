@@ -1,11 +1,11 @@
-## Removing input features via a generative model to explain their attributions to classifier's decisions
+## Explaining image classifiers by removing input features using generative models
 
 This repository contains source code necessary to reproduce some of the main results in [the paper](https://arxiv.org/abs/1910.04256):
 
 **If you use this software, please consider citing:**
     
     @inproceedings{agarwal2020explaining,
-      title={Explaining an image classifier's decisions using generative models},
+      title={Explaining image classifiers by removing input features using generative models},
       author={Agarwal, Chirag and Nguyen, Anh},
       year={2020},
       booktitle={Proceedings of the Asian Conference on Computer Vision (ACCV)},
